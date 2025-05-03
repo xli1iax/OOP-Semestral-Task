@@ -15,7 +15,7 @@ public class AbstractContract {
     public AbstractContract(String contractNumber, InsuranceCompany insurer,
                             Person policyHolder, ContractPaymentData contractPaymentData,
                             int coverageAmount){
-        if (contractNumber == null || contractNumber.equals(" ")
+        if (contractNumber == null || contractNumber.trim().isEmpty()
                 || insurer == null || policyHolder == null) throw  new IllegalArgumentException("Please, check that you parameters are not null or empty string!");
         if (coverageAmount < 0) throw new IllegalArgumentException("Coverage amount must be non-negative!");
 
