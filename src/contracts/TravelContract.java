@@ -4,6 +4,7 @@ import company.InsuranceCompany;
 import objects.Person;
 import payment.ContractPaymentData;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class TravelContract extends AbstractContract{
@@ -18,7 +19,22 @@ public class TravelContract extends AbstractContract{
         this.insuredPersons = personsToInsure;
     }
 
-    public Set<Person> getIsuredPersons() {
+    public Set<Person> getInsuredPersons() {
         return insuredPersons;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TravelContract)) return false;
+        TravelContract that = (TravelContract) o;
+        return super.getContractNumber().equals(that.getContractNumber()) &&
+                insurer.equals(that.insurer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getContractNumber(), insurer);
+    }
+
 }

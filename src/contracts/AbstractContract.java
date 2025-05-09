@@ -4,7 +4,9 @@ import company.InsuranceCompany;
 import objects.Person;
 import payment.ContractPaymentData;
 
-public class AbstractContract {
+import java.util.Objects;
+
+public abstract class AbstractContract {
     private final String contractNumber;
     protected final InsuranceCompany insurer;
     protected final Person policyHolder;
@@ -15,12 +17,15 @@ public class AbstractContract {
     public AbstractContract(String contractNumber, InsuranceCompany insurer,
                             Person policyHolder, ContractPaymentData contractPaymentData,
                             int coverageAmount){
-        if (contractNumber == null || contractNumber.trim().isEmpty()
-                || insurer == null || policyHolder == null) throw  new IllegalArgumentException("Please, check that you parameters are not null or empty string!");
+        if (contractNumber == null || contractNumber.isEmpty()) throw new IllegalArgumentException("Contract number cannot be null or empty string");
+        if (insurer == null || policyHolder == null) throw  new IllegalArgumentException("Insurer or policy holder is null!");
         if (coverageAmount < 0) throw new IllegalArgumentException("Coverage amount must be non-negative!");
 
-        this.contractNumber = contractNumber;
         this.insurer = insurer;
+
+        if (isContractNumberTaken(contractNumber)) throw new IllegalArgumentException("Contract number has been already taken!");
+
+        this.contractNumber = contractNumber;
         this.policyHolder = policyHolder;
         this.contractPaymentData = contractPaymentData;
         this.coverageAmount = coverageAmount;
@@ -61,10 +66,33 @@ public class AbstractContract {
     }
 
     public void pay(int amount) {
-
+        insurer.getHandler().pay(this, amount);
     }
 
     public void updateBalance() {
+        insurer.chargePremiumOnContract(this);
+    }
 
+    private boolean isContractNumberTaken(String contractNumber) {
+        for (AbstractContract contract : insurer.getContracts()) {
+            if (contract.getContractNumber().equals(contractNumber)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractContract)) return false;
+        AbstractContract that = (AbstractContract) o;
+        return this.getContractNumber().equals(that.getContractNumber()) &&
+                this.insurer.equals(that.insurer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getContractNumber(), insurer);
     }
 }
